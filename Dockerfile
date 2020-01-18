@@ -63,7 +63,7 @@ RUN echo "auth requisite pam_deny.so" >> /etc/pam.d/su && \
 
 USER $NB_UID
 WORKDIR $HOME
-ARG PYTHON_VERSION=default
+ARG PYTHON_VERSION=3.7
 
 # Setup work directory for backward-compatibility
 RUN mkdir /home/$NB_USER/work && \
@@ -117,33 +117,13 @@ RUN conda install --quiet --yes 'tini=0.18.0' && \
 #    fix-permissions $CONDA_DIR && \
 #    fix-permissions /home/$NB_USER
 
-RUN conda create --name dl -y && \
-    conda activate dl && \
-    conda install python=3.7 pip -y
+RUN conda install --quiet --yes python=$PYTHON_VERSION pip -y && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 # Add MXNET
 RUN pip install mxnet==1.6.0b20191122
 RUN pip install d2l
-
-#RUN conda install --quiet --yes \
-#    'notebook=6.0.0' \
-#    'jupyterhub=1.0.0' \
-#    'jupyterlab=1.2.1' && \
-#    conda clean --all -f -y && \
-#    npm cache clean --force && \
-#    jupyter notebook --generate-config && \
-#    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
-#    rm -rf /home/$NB_USER/.cache/yarn && \
-#    fix-permissions $CONDA_DIR && \
-#    fix-permissions /home/$NB_USER
-# Setup miniconda
-#RUN exec bash && ~/miniconda3/bin/conda init && \
-#    conda create --name dl -y
-#RUN exec bash && conda activate dl
-#RUN exec bash && conda install python=3.7 pip -y
-#RUN exec bash && pip install mxnet==1.6.0b20191122
-#RUN exec bash && pip install d2l
-#EXPOSE 8888
 
 # Configure container startup
 ENTRYPOINT ["tini", "-g", "--"]
