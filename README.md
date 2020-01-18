@@ -6,6 +6,7 @@ A not too thick Dockerfile for Deep Learning projects.
 
 ```
 docker build . - t dl
+```
 
 
 ## Run
